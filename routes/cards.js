@@ -39,7 +39,7 @@ router.get('/cards/:id', (req, res) => {
     })
     .catch(() => res
       .status(500)
-      .send('error'));
+      .send({ message: 'Запрашиваемый ресурс не найден' }));
 });
 
 module.exports = router;
