@@ -2,29 +2,22 @@ const express = require('express');
 
 const router = express.Router();
 const path = require('path');
-const fs = require('fs');
+const fsPromise = require('fs').promises;
 
-const readFile = (way) => new Promise((res, rej) => {
-  fs.readFile(way, (err, data) => {
-    if (err) {
-      rej(err);
-    }
-    res(data);
-  });
-});
+const userPath = path.join(__dirname, '..', 'data', 'users.json');
 
 router.get('/users', (req, res) => {
-  readFile(path.join(__dirname, '..', 'data', 'users.json'))
+  fsPromise.readFile(userPath, { encoding: 'utf8' })
     .then((data) => res
       .status(200)
       .send(JSON.parse(data)))
     .catch(() => res
       .status(500)
-      .send('Error'));
+      .send('Ошибка'));
 });
 
 router.get('/users/:id', (req, res) => {
-  readFile(path.join(__dirname, '..', 'data', 'users.json'))
+  fsPromise.readFile(userPath, { encoding: 'utf8' })
     .then((data) => {
       // eslint-disable-next-line no-underscore-dangle
       const user = JSON.parse(data).find((owner) => owner._id === req.params.id);
@@ -39,7 +32,7 @@ router.get('/users/:id', (req, res) => {
     })
     .catch(() => res
       .status(500)
-      .send({ message: 'Запрашиваемый ресурс не найден' }));
+      .send({ message: 'Ошибка' }));
 });
 
 module.exports = router;
