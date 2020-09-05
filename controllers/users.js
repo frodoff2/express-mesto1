@@ -34,7 +34,7 @@ module.exports.editProfile = (req, res) => {
   const { name, about } = req.body;
 
   // eslint-disable-next-line no-underscore-dangle
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (user) {
         res.status(200).send({ user });
@@ -48,7 +48,7 @@ module.exports.editAvatar = (req, res) => {
   const { avatar } = req.body;
 
   // eslint-disable-next-line no-underscore-dangle
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (user) {
         res.status(200).send({ user });

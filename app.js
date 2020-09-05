@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path'); // модуль для пути
 const mongoose = require('mongoose'); // модуль для монго
 const bodyParser = require('body-parser');
 
@@ -22,7 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   req.user = {
-    _id: '5f4e784ef13dfe9c69c26b47',
+    _id: '5f538b5a2cc42070642e9555',
   };
 
   next();
@@ -30,7 +29,6 @@ app.use((req, res, next) => {
 
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
-app.use(express.static(path.join(__dirname, 'public'))); // открыли доступ к публичной папки
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
