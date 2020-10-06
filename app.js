@@ -1,14 +1,54 @@
 const express = require('express');
 const mongoose = require('mongoose'); // модуль для монго
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 
-const userRouter = require('./routes/users');
-const cardsRouter = require('./routes/cards');
+const { login } = require('./controllers/users');
+const { postUser } = require('./controllers/users');
 
+const { userValidation, loginValidation } = require('./middlewares/validation');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+const auth = require('./middlewares/auth');
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
 
 const app = express(); // подключаем экспресс
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requestLogger); // подключаем логгер запросов
+
+// роуты, не требующие авторизации
+app.post('/signup', userValidation, postUser);
+app.post('/signin', loginValidation, login);
+
+// авторизуемся
+app.use(auth);
+
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
+
+app.use(errorLogger); // подключаем логгер ошибок
+
+app.use(errors()); // обрабатывает celebreate
+
+// ошибка сервера
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+  next();
+});
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -16,19 +56,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useCreateIndex: true,
   useFindAndModify: false,
 });
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5f538b5a2cc42070642e9555',
-  };
-
-  next();
-});
-
-app.use('/users', userRouter);
-app.use('/cards', cardsRouter);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
