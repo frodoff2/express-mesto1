@@ -12,3 +12,13 @@
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
+
+## Доменный адрес:
+http://mukhabbat.students.nomoreparties.co/
+
+## Публичный API
+178.154.247.198
+
+## Запустить сервер
+ssh mukhabbat@178.154.247.198
+
